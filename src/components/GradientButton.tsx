@@ -2,16 +2,23 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { RFValue } from 'react-native-responsive-fontsize'
 import LinearGradient from 'react-native-linear-gradient'
+import { CirclePlay, CircleUser, House, MonitorCloud, Play } from 'lucide-react-native';
+import { playSound } from '../helpers/SoundUtility';
 
 
-const iconSize = RFValue()
+
+
+const iconSize = RFValue(14)
 const GradientButton = ({ title, onPress, iconColor = "#d5be3e" }: any) => {
 
     return (
         <View style={styles.mainContainer}>
             <TouchableOpacity style={styles.btnContainer}
                 activeOpacity={0.5}
-                onPress={() => { }}
+                onPress={()=>{
+                    playSound('ui')
+                    onPress()
+                }}
             >
                 <LinearGradient
                     colors={["#4c669f", "#3b5998", "#192f6a"]}
@@ -19,6 +26,22 @@ const GradientButton = ({ title, onPress, iconColor = "#d5be3e" }: any) => {
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                 >
+                    {
+                        title == "RESUME" ?
+                            <Play color={iconColor} size={iconSize} />
+                            :
+                            title == "NEW GAME" ?
+                                <CirclePlay color={iconColor} size={iconSize} />
+                                :
+                                title == "VS CPU" ?
+                                    <MonitorCloud  color={iconColor} size={iconSize}/>
+                                    : title == "HOME" ?
+                                        <House color={iconColor} size={iconSize} />
+                                        :
+                                        <CircleUser color={iconColor} size={iconSize} />
+
+                    }
+
                     <Text style={styles.buttonText}>{title}</Text>
                 </LinearGradient>
 
