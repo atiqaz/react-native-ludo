@@ -44,7 +44,7 @@ function Dice(props: any) {
                         easing: Easing.out(Easing.ease),
                         useNativeDriver: true
                     })
-                ])
+                ])  
             ).start()
         }
         animateArrow()
@@ -53,8 +53,8 @@ function Dice(props: any) {
 
 
     const handleDicePress = async () => {
-        const newDiceNo = Math.floor(Math.random() * 6) + 1;
-        // const newDiceNo=5
+        // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+        const newDiceNo = 2
         playSound("dice_roll")
         setDiceRolling(true)
         await delay(800)
@@ -70,13 +70,14 @@ function Dice(props: any) {
                 dispatch(enablePileSelection({ playerNo: player }))
             } else {
                 let chancePlayer = player + 1;
+                console.log('chancePlayer', chancePlayer)
                 if (chancePlayer > 4) {
                     chancePlayer = 1;
 
                 }
+                await delay(600)
+                dispatch(updatePlayerChance({ chancePlayer: chancePlayer }))
             }
-            await delay(600)
-            dispatch(updatePlayerChance({chancePlayer: chancePlayer}))
         } else {
             const canMove = playerPieces.some(
                 pile => pile.travelCount + newDiceNo <= 57 && pile.pos != 0,

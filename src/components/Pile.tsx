@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Animated, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Animated, Image, Alert } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { selectCellSelection, selectDiceNo, selectPocketPileSelection } from '../redux/reducers/gameSelectors'
@@ -11,6 +11,7 @@ import { Circle, Svg } from 'react-native-svg'
 
 export default function Pile(props: any) {
   const { player, color, onPress, cell, pieceId } = props
+  // console.log(props)
 
   const rotation = useRef(new Animated.Value(0)).current;
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
@@ -19,7 +20,7 @@ export default function Pile(props: any) {
   const playerPieces = useSelector((state: any) => state.game[`player${player}`]);
 
   const isPileEnabled = useMemo(
-    () => player === currentPlayerPileSelection, [player, currentPlayerPileSelection]
+    () => player === currentPlayerPileSelection && diceNo === 6, [player, currentPlayerPileSelection, diceNo]
   )
   const isCellEnabled = useMemo(
     () => player === currentPlayerCellSelection, [player, currentPlayerCellSelection]
@@ -69,7 +70,7 @@ export default function Pile(props: any) {
 
       ]}
       activeOpacity={0.5}
-      disabled={cell ? !(isCellEnabled && isForwardable()) : !isPileEnabled}
+      // disabled={cell ? !(isCellEnabled && isForwardable()) : isPileEnabled}
 
     >
       <View style={styles.hollowCircle}>
@@ -85,9 +86,9 @@ export default function Pile(props: any) {
             >
               <Svg width="25" height="25">
                 <Circle
-                 cx="12.5" 
-                 cy="12.5"
-                  r="8" 
+                 cx="11.5" 
+                 cy="10.5"
+                  r="11.5" 
                    stroke="white" 
                    strokeWidth="2"
                     strokeDasharray="4 4"

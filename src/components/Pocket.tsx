@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 import React, { memo } from 'react'
 import { useDispatch } from 'react-redux'
 import { Colors } from '../constants/Colors'
 import Pile from './Pile'
+import { startingPoints } from '../helpers/PlotData'
+import { unfreezeDice, updatePlayerPieceValue } from '../redux/reducers/gameSlice'
 
 function Pocket(props: any) {
     const { color, player, data } = props
@@ -10,7 +12,34 @@ function Pocket(props: any) {
     const disptach = useDispatch()
 
     const handlePress = async (value: any) => {
+        let playerNo = value?.id?.slice(0, 1);
+        switch (playerNo) {
+            case "A":
+                playerNo = 'player1';
+                break;
+            case "B":
+                playerNo = 'player2';
+                break;
+            case "C":
+                playerNo = 'player3';
+                break;
+            default:
+                playerNo = "player4";
+                break;
 
+        }
+
+        disptach(
+            updatePlayerPieceValue({
+                playerNo: playerNo,
+                pieceId: value.id,
+                pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1],
+                travelCount: 1,
+
+            })
+        )
+
+        disptach(unfreezeDice())
     }
 
     return (
@@ -31,8 +60,8 @@ function Pocket(props: any) {
                         handlePress={handlePress}
                     />
                 </View>
-                <View style={[styles.flexRow ,{
-                    marginTop:20
+                <View style={[styles.flexRow, {
+                    marginTop: 20
                 }]}>
                     <Plot
                         pieceNo={2}
@@ -55,16 +84,20 @@ function Pocket(props: any) {
 
 export const Plot = (props: any) => {
     const { pieceNo, player, color, data, handlePress } = props
+    console.log(props)
     return (
         <View style={[styles.plot, { backgroundColor: color }]}>
-            {data && data[pieceNo]?.pos===0  && (
+            {data && data[pieceNo]?.pos === 0 && (
+           <>
                 <Pile
-                player={player}
-                color={color}
-                handlePress={()=>{
-                    handlePress(data[pieceNo]);
-                }}
+                    player={player}
+                    color={color}
+                    pieceId={data[pieceNo]?.id}
+                    onPress={() => {
+                        handlePress(data[pieceNo]);
+                    }}
                 />
+           </>
             )}
 
 

@@ -7,6 +7,7 @@ import { ArrowSpot, SafeSpots, StarSpots } from '../helpers/PlotData'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { Star } from 'lucide-react-native'
 import Pile from './Pile'
+import { hanleForwardThunk } from '../redux/reducers/gameAction'
 
 export default function Cell(props: any) {
     const { key, id, cell, color } = props
@@ -25,7 +26,9 @@ export default function Cell(props: any) {
 
         , [plottedPieces, id])
 
-    const handlePress = useCallback((playerNo, pieceId)=>{},[dispatch ,id])
+    const handlePress = useCallback((playerNo, pieceId)=>{
+        dispatch(hanleForwardThunk(playerNo,pieceId,id))
+    },[dispatch ,id])
 
     return (
         <View style={[
@@ -58,11 +61,11 @@ export default function Cell(props: any) {
                 : 4;
 
                 const pieceColor =
-                piece.id.slice(1, 2) === "A"
+                piece.id.slice(0, 1) === "A"
                 ? Colors.red
-                : piece.id.slice(1, 2) === "B"
+                : piece.id.slice(0, 1) === "B"
                 ? Colors.green
-                : piece.id.slice(1, 2) === "C"
+                : piece.id.slice(0, 1) === "C"
                 ? Colors.yellow
                 : Colors.blue;
                 return <View 
