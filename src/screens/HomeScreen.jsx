@@ -30,6 +30,9 @@ const HomeScreen = () => {
     }, [isFocused])
 
     const startGame = (isNew = false) => {
+          if(isNew){
+            dispatch(resetGame())
+        }
         SoundPlayer.stop();
         navigate('LudoBoardScreen');
         playSound('game_start');
@@ -105,9 +108,7 @@ const HomeScreen = () => {
 
     const startgame = async (isNew = false) => { }
     const handleNewGamePress = useCallback(() => {
-        if(isNew){
-            dispatch(resetGame())
-        }
+      
         startGame(true)
     }, [])
 

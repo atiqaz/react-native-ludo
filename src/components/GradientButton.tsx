@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         },
         shadowRadius: 10,
         borderColor: "#d5be3e",
-        width: 220
+        width:'100%'
     },
     buttonText: {
         color: 'white',
