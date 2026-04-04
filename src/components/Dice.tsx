@@ -57,8 +57,8 @@ function Dice(props: any) {
 
 
     const handleDicePress = async () => {
-        const newDiceNo = Math.floor(Math.random() * 6) + 1;
-        // const newDiceNo = 2
+        // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+        const newDiceNo = 6
         playSound("dice_roll")
         setDiceRolling(true)
         await delay(800)
@@ -66,7 +66,7 @@ function Dice(props: any) {
         setDiceRolling(false)
 
 
-        const isAnyPieceAlive = data.some((piece: any) => piece.pos != 0 && piece.pos !== 57);
+        const isAnyPieceAlive = data.some((piece: any) => piece.pos != 0 && piece.travelCount < 57);
         const isAnyPieceLocked = data.some((i: any) => i.pos == 0);
 
         if (isAnyPieceAlive) {
@@ -78,7 +78,7 @@ function Dice(props: any) {
             }
             if (canMove) {
                 dispatch(enableCellSelection({ playerNo: player }));
-            } else if (newDiceNo !== 6) {
+            } else if (!isAnyPieceLocked || newDiceNo !== 6) {
                 await delay(600);
                 dispatch(updatePlayerChance({ chancePlayer: getNextPlayer(player) }));
             }
