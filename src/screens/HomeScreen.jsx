@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, Alert, Animated, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Image, Alert, Animated } from 'react-native'
 import React, { useCallback, useEffect, useRef } from 'react'
 import Wrapper from '../components/Wrapper'
 import Logo from '../assets/images/logo.png'
@@ -19,8 +19,8 @@ const HomeScreen = () => {
     const dispatch = useDispatch()
     const currentPosition = useSelector(selectCurrentPositions);
     console.log(currentPosition)
-    const witchAnim = useRef(new Animated.Value(-deviceWidth)).current
-    const scaleXAnim = useRef(new Animated.Value(-1)).current
+    const witchAnim = useRef(new Animated.Value(-deviceWidth * 0.3)).current
+    const scaleXAnim = useRef(new Animated.Value(1)).current
     const isFocused = useNavigation()
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const HomeScreen = () => {
     }, [isFocused])
 
     const startGame = (isNew = false) => {
-          if(isNew){
+        if (isNew) {
             dispatch(resetGame())
         }
         SoundPlayer.stop();
@@ -39,88 +39,39 @@ const HomeScreen = () => {
     };
 
     useEffect(() => {
-        const loopAnimation = () => {
-            Animated.loop(
-                Animated.sequence([
-                    Animated.parallel([
-                        Animated.timing(witchAnim, {
-                            toValue: deviceWidth * 2,
-                            duration: 2000,
-                            useNativeDriver: true
-                        }),
-                        Animated.timing(scaleXAnim, {
-                            toValue: -1,
-                            duration: 0,
-                            useNativeDriver: true
-                        })
-                    ]),
-                    Animated.delay(3000),
-                    Animated.parallel([
-                        Animated.timing(witchAnim, {
-                            toValue: deviceWidth * 2,
-                            duration: 8000,
-                            useNativeDriver: true
-                        }),
-                        Animated.timing(scaleXAnim, {
-                            toValue: -1,
-                            duration: 0,
-                            useNativeDriver: true
-                        })
-                    ]),
-                    Animated.parallel([
-                        Animated.timing(witchAnim, {
-                            toValue: deviceWidth * 0.05,
-                            duration: 3000,
-                            useNativeDriver: true
-                        }),
-                        Animated.timing(scaleXAnim, {
-                            toValue: 1,
-                            duration: 0,
-                            useNativeDriver: true
-                        })
-                    ]),
-                    Animated.delay(3000),
-                    Animated.parallel([
-                        Animated.timing(witchAnim, {
-                            toValue: -deviceWidth * 2,
-                            duration: 8000,
-                            useNativeDriver: true
-                        }),
-                        Animated.timing(scaleXAnim, {
-                            toValue: 1,
-                            duration: 0,
-                            useNativeDriver: true
-                        })
-                    ]),
-
-                ])
-            ).start()
-        }
-        const cleanupAnimation = () => {
-            Animated.timing(witchAnim).stop()
-            Animated.timing(scaleXAnim).stop()
-        }
-        loopAnimation()
-        return cleanupAnimation;
-    }, [witchAnim, scaleXAnim])
+        const anim = Animated.loop(
+            Animated.sequence([
+                Animated.timing(witchAnim, { toValue: deviceWidth * 0.3, duration: 3000, useNativeDriver: true }),
+                Animated.delay(2000),
+                Animated.timing(witchAnim, { toValue: deviceWidth * 1.2, duration: 3000, useNativeDriver: true }),
+                Animated.timing(scaleXAnim, { toValue: -1, duration: 0, useNativeDriver: true }),
+                Animated.timing(witchAnim, { toValue: deviceWidth * 0.3, duration: 3000, useNativeDriver: true }),
+                Animated.delay(2000),
+                Animated.timing(witchAnim, { toValue: -deviceWidth * 0.3, duration: 3000, useNativeDriver: true }),
+                Animated.timing(scaleXAnim, { toValue: 1, duration: 0, useNativeDriver: true }),
+            ])
+        )
+        anim.start()
+        return () => anim.stop()
+    }, [])
 
     const renderButton = useCallback((title, onPress) => <GradientButton title={title} onPress={onPress} />, [])
 
     const startgame = async (isNew = false) => { }
     const handleNewGamePress = useCallback(() => {
-      
+
         startGame(true)
     }, [])
 
-    const handlePressResume =useCallback(()=>{
+    const handlePressResume = useCallback(() => {
         startGame()
-    },[])
+    }, [])
     return (
         <Wrapper style={styles.mainContainer}>
             <View style={styles.imageContainer}>
                 <Image source={Logo} style={styles.img} />
             </View>
-            {currentPosition.length!==0  && renderButton("RESUME", handlePressResume)}
+            {currentPosition.length !== 0 && renderButton("RESUME", handlePressResume)}
             {renderButton("New game", handleNewGamePress)}
             {renderButton("VS CPU", () => Alert.alert("Coming Soon"))}
             {renderButton("2 VS 2", () => Alert.alert("Coming Soon"))}
@@ -132,23 +83,18 @@ const HomeScreen = () => {
 
             <Animated.View
                 style={[
-                    styles.witchConatiner,
-                    {
-                        transform: [{ translateX: witchAnim }, { scale: scaleXAnim }]
-                    }
+                    styles.witchContainer,
+                    { transform: [{ translateX: witchAnim }, { scaleX: scaleXAnim }] }
                 ]}
             >
-                <Pressable>
-                    <Lottiew
-                        hardwareAccelerationAndroid
-                        source={Witch}
-                        autoPlay
-                        speed={1}
-                        style={styles.witch}
-                    />
-
-                </Pressable>
-
+                <Lottiew
+                    hardwareAccelerationAndroid
+                    source={Witch}
+                    autoPlay
+                    loop
+                    speed={1}
+                    style={styles.witch}
+                />
             </Animated.View>
 
         </Wrapper>
@@ -172,12 +118,16 @@ const styles = StyleSheet.create({
         height: "100%",
         resizeMode: "contain"
     },
+    witchContainer: {
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        zIndex: -1,
+    },
     witch: {
-        height: 250,
-        width: 250,
-        transform: [{
-            rotate: "25deg"
-        }]
+        height: 200,
+        width: 200,
+        transform: [{ rotate: '25deg' }]
     },
     footer: {
         alignItems: 'center',
