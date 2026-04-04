@@ -6,6 +6,9 @@ export const gameSlice = createSlice({
     initialState: initialState,
     reducers: {
         resetGame: () => initialState,
+        setGameMode: (state, action) => {
+            state.gameMode = action.payload;
+        },
         announceWinner: (state: any, action: any) => {
             state.winner = action.payload;
 
@@ -77,6 +80,7 @@ export const gameSlice = createSlice({
 })
 
 export const { resetGame,
+    setGameMode,
     updatePlayerChance,
     announceWinner,
     updateDiceNo,

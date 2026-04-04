@@ -7,7 +7,7 @@ import { startingPoints } from '../helpers/PlotData'
 import { unfreezeDice, updatePlayerPieceValue } from '../redux/reducers/gameSlice'
 
 function Pocket(props: any) {
-    const { color, player, data } = props
+    const { color, player, data, disabled = false } = props
 
     const disptach = useDispatch()
 
@@ -43,7 +43,7 @@ function Pocket(props: any) {
     }
 
     return (
-        <View style={[styles.Container, { backgroundColor: color }]}>
+        <View style={[styles.Container, { backgroundColor: color, opacity: disabled ? 0.4 : 1 }]}>
             <View style={styles.childFrame}>
                 <View style={styles.flexRow}>
                     <Plot

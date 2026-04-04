@@ -12,7 +12,7 @@ import SoundPlayer from 'react-native-sound-player'
 import { navigate } from '../helpers/NavigationUtil'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentPositions } from '../redux/reducers/gameSelectors'
-import { resetGame } from '../redux/reducers/gameSlice'
+import { resetGame, setGameMode } from '../redux/reducers/gameSlice'
 
 const HomeScreen = () => {
 
@@ -29,9 +29,12 @@ const HomeScreen = () => {
         }
     }, [isFocused])
 
-    const startGame = (isNew = false) => {
+    const startGame = (isNew = false, mode = null) => {
         if (isNew) {
             dispatch(resetGame())
+        }
+        if (mode) {
+            dispatch(setGameMode(mode))
         }
         SoundPlayer.stop();
         navigate('LudoBoardScreen');
@@ -59,12 +62,15 @@ const HomeScreen = () => {
 
     const startgame = async (isNew = false) => { }
     const handleNewGamePress = useCallback(() => {
-
-        startGame(true)
+        startGame(true, 'pvp4')
     }, [])
 
     const handlePressResume = useCallback(() => {
         startGame()
+    }, [])
+
+    const handle2PlayerPress = useCallback(() => {
+        startGame(true, 'pvp2')
     }, [])
     return (
         <Wrapper style={styles.mainContainer}>
@@ -74,7 +80,7 @@ const HomeScreen = () => {
             {currentPosition.length !== 0 && renderButton("RESUME", handlePressResume)}
             {renderButton("New game", handleNewGamePress)}
             {renderButton("VS CPU", () => Alert.alert("Coming Soon"))}
-            {renderButton("2 VS 2", () => Alert.alert("Coming Soon"))}
+            {renderButton("2 VS 2", handle2PlayerPress)}
 
             <View style={styles.footer}>
                 <Text style={styles.footerSub}>Developed by</Text>

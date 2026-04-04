@@ -37,6 +37,7 @@ export const initialState ={
     touchDiceBlock:false,
     currentPositions:[],
     fireworks:false,
-    winner:null
+    winner:null,
+    gameMode: 'pvp4'
 
 }

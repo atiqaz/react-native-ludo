@@ -5,7 +5,7 @@ import Wrapper from '../components/Wrapper'
 import { useNavigation } from '@react-navigation/native'
 import startGame from '../assets/images/start.png'
 import { useSelector } from 'react-redux'
-import { selectDiceTouch, selectPlayer1, selectPlayer2, selectPlayer3, selectPlayer4 } from '../redux/reducers/gameSelectors'
+import { selectDiceTouch, selectGameMode, selectPlayer1, selectPlayer2, selectPlayer3, selectPlayer4 } from '../redux/reducers/gameSelectors'
 import WinModal from '../components/WinModal'
 import { Colors } from '../constants/Colors'
 import Dice from '../components/Dice'
@@ -29,6 +29,8 @@ export default function LudoBoardScreen() {
   const player4 = useSelector(selectPlayer4)
   const winner = useSelector((state: any) => state.game.winner)
   const isDiceTouch = useSelector(selectDiceTouch)
+  const gameMode = useSelector(selectGameMode)
+  const is2Player = gameMode === 'pvp2'
 
   useEffect(() => {
     if (isFocused) {
@@ -60,7 +62,7 @@ export default function LudoBoardScreen() {
       <View style={styles.container}>
 
         <View style={styles.flexRow} pointerEvents={isDiceTouch ? "none" : "auto"}>
-          <Dice color={Colors.green} player={2} data={player2} />
+          <Dice color={Colors.green} player={2} data={player2} disabled={is2Player} />
           <Dice color={Colors.yellow} rotate player={3} data={player3} />
         </View>
 
@@ -69,7 +71,7 @@ export default function LudoBoardScreen() {
 
           {/* Row 1: Green (top-left) + vertical path + Yellow (top-right) */}
           <View style={styles.plotContainer}>
-            <Pocket color={Colors.green} player={2} data={player2} />
+            <Pocket color={Colors.green} player={2} data={player2} disabled={is2Player} />
             <VerticalPath cells={Plot2Data} color={Colors.yellow} />
             <Pocket color={Colors.yellow} player={3} data={player3} />
           </View>
@@ -88,7 +90,7 @@ export default function LudoBoardScreen() {
           <View style={styles.plotContainer}>
             <Pocket color={Colors.red} player={1} data={player1} />
             <VerticalPath cells={Plot4Data} color={Colors.red} />
-            <Pocket color={Colors.blue} player={4} data={player4} />
+            <Pocket color={Colors.blue} player={4} data={player4} disabled={is2Player} />
           </View>
 
         </View>
@@ -96,7 +98,7 @@ export default function LudoBoardScreen() {
         {/* =======================Dice======================== */}
         <View style={styles.flexRow} pointerEvents={isDiceTouch ? "none" : "auto"}>
           <Dice color={Colors.red} player={1} data={player1} />
-          <Dice color={Colors.blue} rotate player={4} data={player4} />
+          <Dice color={Colors.blue} rotate player={4} data={player4} disabled={is2Player} />
         </View>
 
         <View></View>

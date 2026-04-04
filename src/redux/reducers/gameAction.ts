@@ -1,6 +1,6 @@
 import { SafeSpots, StarSpots, startingPoints, turningPoints, victoryStart } from "../../helpers/PlotData"
 import { playSound } from "../../helpers/SoundUtility"
-import { selectCurrentPositions, selectDiceNo } from "./gameSelectors"
+import { selectCurrentPositions, selectDiceNo, selectGameMode } from "./gameSelectors"
 import { announceWinner, disableTouch, unfreezeDice, updateFireWorks, updatePlayerChance, updatePlayerPieceValue } from "./gameSlice"
 
 const delay = (ms) => new Promise(resolve => setTimeout(() => {
@@ -16,10 +16,18 @@ const checkWinningCriteria = (pieces) => {
     return true
 }
 
+const getNextPlayer = (playerNo: number, gameMode: string) => {
+    if (gameMode === 'pvp2') {
+        return playerNo === 1 ? 3 : 1;
+    }
+    return playerNo + 1 > 4 ? 1 : playerNo + 1;
+}
+
 export const hanleForwardThunk = (playerNo, id, pos) => async (dispatch, getState) => {
     const state = getState()
     const plottedPieces = selectCurrentPositions(state)
     const diceNo = selectDiceNo(state)
+    const gameMode = selectGameMode(state)
 
     let alpha = playerNo == 1 ? "A" : playerNo == 2 ? "B" : playerNo == 3 ? "C" : "D";
 
@@ -49,7 +57,7 @@ export const hanleForwardThunk = (playerNo, id, pos) => async (dispatch, getStat
             travelCount
         }));
         playSound('pile_move');
-        await delay(300)
+        await delay(220)
 
 
     }
@@ -107,13 +115,11 @@ export const hanleForwardThunk = (playerNo, id, pos) => async (dispatch, getStat
     //check six dice
 
     if (diceNo == 6 || travelCount == 57) {
-        dispatch(updatePlayerChance({chancePlayer: playerNo}));
+        dispatch(updatePlayerChance({ chancePlayer: playerNo }));
         if (travelCount == 57) {
             playSound('home_win')
             const finalPlayerState = getState();
             const allPlayerPieces = finalPlayerState.game[`player${playerNo}`];
-
-
             if (checkWinningCriteria(allPlayerPieces)) {
                 dispatch(announceWinner(playerNo))
                 playSound('cheer', true)
@@ -123,15 +129,9 @@ export const hanleForwardThunk = (playerNo, id, pos) => async (dispatch, getStat
             dispatch(updateFireWorks(true))
             return
         }
-
-
-    }else{
-        let chancePlayer=playerNo+1;
-        if(chancePlayer>4){
-            chancePlayer=1
-        }
-        dispatch(updatePlayerChance({chancePlayer}))
-
+    } else {
+        const chancePlayer = getNextPlayer(playerNo, gameMode);
+        dispatch(updatePlayerChance({ chancePlayer }))
     }
 
   

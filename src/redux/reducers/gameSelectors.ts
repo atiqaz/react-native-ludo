@@ -14,3 +14,4 @@ export const selectPocketPileSelection = (state:any)=>state.game.pileSelectionPl
 export const selectCellSelection = (state:any)=>state.game.cellSelectionPlayer
 export const selectDiceTouch = (state:any)=>state.game.touchDiceBlock
 export const selectFireWorks = (state:any)=>state.game.fireworks
+export const selectGameMode = (state:any)=>state.game.gameMode

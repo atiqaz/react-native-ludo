@@ -9,16 +9,20 @@ import Arrow from "../assets/images/arrow.png"
 import DiceRoll from "../assets/animation/diceroll.json"
 import { playSound } from '../helpers/SoundUtility'
 import { enableCellSelection, enablePileSelection, updateDiceNo, updatePlayerChance } from '../redux/reducers/gameSlice'
+import { selectGameMode } from '../redux/reducers/gameSelectors'
 
 
 
 
 function Dice(props: any) {
-    const { color, player, data, rotate } = props
+    const { color, player, data, rotate, disabled = false } = props
     const dispatch = useDispatch()
     const currentPlayerChance = useSelector(selectCurrentPlayerChance)
     const isDiceRolled = useSelector(selectDiceRolled)
     const diceNo = useSelector(selectDiceNo)
+    const gameMode = useSelector(selectGameMode)
+
+    const getNextPlayer = (p: number) => gameMode === 'pvp2' ? (p === 1 ? 3 : 1) : (p + 1 > 4 ? 1 : p + 1)
     const playerPieces = useSelector((state: any) => state.game[`player${currentPlayerChance}`])
     const pileIcon = BackgroundImage.GetImage(color)
     const diceIcon = BackgroundImage.GetImage(diceNo)
@@ -53,8 +57,8 @@ function Dice(props: any) {
 
 
     const handleDicePress = async () => {
-        const newDiceNo = Math.floor(Math.random() * 6) + 1;
-        // const newDiceNo = 5
+        // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+        const newDiceNo = 2
         playSound("dice_roll")
         setDiceRolling(true)
         await delay(800)
@@ -69,32 +73,28 @@ function Dice(props: any) {
             const canMove = data.some(
                 (pile: any) => pile.travelCount + newDiceNo <= 57 && pile.pos != 0
             );
-            if (!canMove) {
-                let chancePlayer = player + 1;
-                if (chancePlayer > 4) chancePlayer = 1;
-                await delay(600);
-                dispatch(updatePlayerChance({ chancePlayer }));
-                return;
-            }
             if (newDiceNo == 6 && isAnyPieceLocked) {
                 dispatch(enablePileSelection({ playerNo: player }));
             }
-            dispatch(enableCellSelection({ playerNo: player }));
+            if (canMove) {
+                dispatch(enableCellSelection({ playerNo: player }));
+            } else if (newDiceNo !== 6) {
+                await delay(600);
+                dispatch(updatePlayerChance({ chancePlayer: getNextPlayer(player) }));
+            }
         } else {
             if (newDiceNo == 6) {
                 dispatch(enablePileSelection({ playerNo: player }));
             } else {
-                let chancePlayer = player + 1;
-                if (chancePlayer > 4) chancePlayer = 1;
                 await delay(600);
-                dispatch(updatePlayerChance({ chancePlayer }));
+                dispatch(updatePlayerChance({ chancePlayer: getNextPlayer(player) }));
             }
         }
 
 
     }
     return (
-        <View style={[styles.flexRow, { transform: [{ scaleX: rotate ? -1 : 1 }] }]}>
+        <View style={[styles.flexRow, { transform: [{ scaleX: rotate ? -1 : 1 }], opacity: disabled ? 0.3 : 1 }]}>
             <View style={styles.border1}>
                 <LinearGradient
                     style={styles.linearGradient}
@@ -103,7 +103,6 @@ function Dice(props: any) {
                     end={{ x: 1, y: 0.5 }}
                 >
                     {" "}
-
                     <View>
                         <Image source={pileIcon} style={styles.pileIcon} />
                     </View>
@@ -117,8 +116,7 @@ function Dice(props: any) {
                     end={{ x: 1, y: 0.5 }}
                 >
                     <View style={styles.diceContainer}>
-                        {
-                            currentPlayerChance == player ? (
+                        {!disabled && currentPlayerChance == player ? (
                                 <>
                                     <TouchableOpacity
                                         disabled={isDiceRolled}
@@ -136,7 +134,7 @@ function Dice(props: any) {
                 </LinearGradient>
             </View>
 
-            {currentPlayerChance == player && !isDiceRolled ? (
+            {!disabled && currentPlayerChance == player && !isDiceRolled ? (
 
                 <Animated.View style={{
                     transform: [{
@@ -148,7 +146,7 @@ function Dice(props: any) {
             ) : null}
 
 
-            {currentPlayerChance == player && diceRolling ? (
+            {!disabled && currentPlayerChance == player && diceRolling ? (
 
                 <>
                     <LottieView
