@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useCallback, useMemo } from 'react'
+import { Animated, StyleSheet, Text, View } from 'react-native'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Colors } from '../constants/Colors'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentPositions } from '../redux/reducers/gameSelectors'
@@ -8,6 +8,22 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { Star } from 'lucide-react-native'
 import Pile from './Pile'
 import { hanleForwardThunk } from '../redux/reducers/gameAction'
+
+const AnimatedPiece = ({ piece, index, total, playerNo, pieceColor, onPress }: any) => {
+    return (
+        <View
+            style={[styles.pieceContainer, {
+                transform: [
+                    { scale: total == 1 ? 1 : 0.7 },
+                    { translateX: total == 1 ? 0 : index % 2 == 0 ? -6 : 6 },
+                    { translateY: total == 1 ? 0 : index < 2 ? -6 : 6 }
+                ]
+            }]}
+        >
+            <Pile cell={true} player={playerNo} onPress={onPress} pieceId={piece.id} color={pieceColor} />
+        </View>
+    )
+}
 
 export default function Cell(props: any) {
     const { key, id, cell, color } = props
@@ -50,42 +66,26 @@ export default function Cell(props: any) {
             }}>➡️</Text>
            )}
            {
-            piecesAtPosition.map((piece,index)=>{
+            piecesAtPosition.map((piece, index) => {
                 const playerNo =
-                piece.id.slice(0,1)=== "A"
-                ?1
-                :piece.id.slice(0, 1) === "B"
-                ? 2
-                : piece.id.slice(0, 1) === "C"
-                ? 3
-                : 4;
+                piece.id.slice(0,1)=== "A" ? 1
+                : piece.id.slice(0, 1) === "B" ? 2
+                : piece.id.slice(0, 1) === "C" ? 3 : 4;
 
                 const pieceColor =
-                piece.id.slice(0, 1) === "A"
-                ? Colors.red
-                : piece.id.slice(0, 1) === "B"
-                ? Colors.green
-                : piece.id.slice(0, 1) === "C"
-                ? Colors.yellow
-                : Colors.blue;
-                return <View 
-               key={piece.id} 
-                style={[styles.pieceContainer,{
-                    transform: [
-                        {scale:piecesAtPosition?.length==1 ? 1:0.7},
-                        {translateX:piecesAtPosition.length==1? 0:index%2==0 ?-6:6 },
-                        {translateY: piecesAtPosition.length==1? 0: index < 2 ?-6:6}
-                    ]
-                }]}>
-                    <Pile
-                    cell={true}
-                    player={playerNo}
-                    onPress={()=>handlePress(playerNo, piece.id)}
-                    pieceId={piece.id}
-                    color={pieceColor}
-                    
-                    ></Pile>
-                </View>
+                piece.id.slice(0, 1) === "A" ? Colors.red
+                : piece.id.slice(0, 1) === "B" ? Colors.green
+                : piece.id.slice(0, 1) === "C" ? Colors.yellow : Colors.blue;
+
+                return <AnimatedPiece
+                    key={piece.id}
+                    piece={piece}
+                    index={index}
+                    total={piecesAtPosition.length}
+                    playerNo={playerNo}
+                    pieceColor={pieceColor}
+                    onPress={() => handlePress(playerNo, piece.id)}
+                />
             })
            }
         </View>
