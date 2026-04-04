@@ -21,18 +21,11 @@ export const hanleForwardThunk = (playerNo, id, pos) => async (dispatch, getStat
     const plottedPieces = selectCurrentPositions(state)
     const diceNo = selectDiceNo(state)
 
-    const piecesAtPositions = plottedPieces.filter(item => item.pos === pos);
-
-
     let alpha = playerNo == 1 ? "A" : playerNo == 2 ? "B" : playerNo == 3 ? "C" : "D";
-
-    const piece = piecesAtPositions[
-        piecesAtPositions.findIndex(item => item.id.slice(0, 1) === alpha)
-    ];
 
     dispatch(disableTouch())
 
-    let finalPath = piece.pos;
+    let finalPath = pos;
 
     const beforePlayerPiece = state.game[`player${playerNo}`].find(item => item.id === id);
     let travelCount = beforePlayerPiece.travelCount;
@@ -76,8 +69,8 @@ export const hanleForwardThunk = (playerNo, id, pos) => async (dispatch, getStat
 
 
     if (areDifferentIds &&
-        !SafeSpots.includes(finalPlot[0].pos)
-        && !StarSpots.includes(finalPlot[0].pos)) {
+        !SafeSpots.includes(finalPath)
+        && !StarSpots.includes(finalPath)) {
         const enemyPiece = finalPlot.find(p => p.id[0] !== id[0]);
         const enemyId = enemyPiece.id[0];
 

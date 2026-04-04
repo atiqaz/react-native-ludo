@@ -54,7 +54,7 @@ function Dice(props: any) {
 
     const handleDicePress = async () => {
         // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-        const newDiceNo = 2
+        const newDiceNo = 6
         playSound("dice_roll")
         setDiceRolling(true)
         await delay(800)
@@ -62,46 +62,33 @@ function Dice(props: any) {
         setDiceRolling(false)
 
 
-        const isAnyPiceAlive = data.findIndex((piece: any) => piece.pos != 0 && piece.pos !== 57);
-        const isAnyPieceLocked = data.findIndex(i => i.pos == 0)
+        const isAnyPieceAlive = data.some((piece: any) => piece.pos != 0 && piece.pos !== 57);
+        const isAnyPieceLocked = data.some((i: any) => i.pos == 0);
 
-        if (isAnyPiceAlive) {
-            if (newDiceNo == 6) {
-                dispatch(enablePileSelection({ playerNo: player }))
-            } else {
+        if (isAnyPieceAlive) {
+            const canMove = data.some(
+                (pile: any) => pile.travelCount + newDiceNo <= 57 && pile.pos != 0
+            );
+            if (!canMove) {
                 let chancePlayer = player + 1;
-                console.log('chancePlayer', chancePlayer)
-                if (chancePlayer > 4) {
-                    chancePlayer = 1;
-
-                }
-                await delay(600)
-                dispatch(updatePlayerChance({ chancePlayer: chancePlayer }))
-            }
-        } else {
-            const canMove = playerPieces.some(
-                pile => pile.travelCount + newDiceNo <= 57 && pile.pos != 0,
-            )
-            if (
-                (!canMove && newDiceNo == 6 && isAnyPieceLocked == -1) ||
-                (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
-                (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)
-
-            ) {
-
-                let chancePlayer = player + 1;
-                if (chancePlayer > 4) {
-                    chancePlayer = 1
-                }
+                if (chancePlayer > 4) chancePlayer = 1;
                 await delay(600);
-                dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
+                dispatch(updatePlayerChance({ chancePlayer }));
                 return;
             }
-
-            if (newDiceNo == 6) {
-                dispatch(enablePileSelection({ playerNo: player }))
+            if (newDiceNo == 6 && isAnyPieceLocked) {
+                dispatch(enablePileSelection({ playerNo: player }));
             }
-            dispatch(enableCellSelection({ playerNo: player }))
+            dispatch(enableCellSelection({ playerNo: player }));
+        } else {
+            if (newDiceNo == 6) {
+                dispatch(enablePileSelection({ playerNo: player }));
+            } else {
+                let chancePlayer = player + 1;
+                if (chancePlayer > 4) chancePlayer = 1;
+                await delay(600);
+                dispatch(updatePlayerChance({ chancePlayer }));
+            }
         }
 
 

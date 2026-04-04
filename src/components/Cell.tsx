@@ -38,7 +38,7 @@ export default function Cell(props: any) {
         }
         ]}>
            
-           {isStarSpots&&<Star color={'grey'} size={RFValue(13)} />}
+           {isStarSpots&&<Star color={'grey'} size={RFValue(13)} style={{zIndex:0}} />}
            {isArrowSpot && (
             <Text style={{
                 fontSize: RFValue(10),
@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         bottom: 0,
+        left: 0,
+        right: 0,
         zIndex: 99
     }
 })

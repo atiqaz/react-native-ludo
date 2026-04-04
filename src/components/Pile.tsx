@@ -70,7 +70,8 @@ export default function Pile(props: any) {
 
       ]}
       activeOpacity={0.5}
-      // disabled={cell ? !(isCellEnabled && isForwardable()) : isPileEnabled}
+   disabled={cell ? !(isCellEnabled && isForwardable()) : !isPileEnabled}
+
 
     >
       <View style={styles.hollowCircle}>
@@ -116,7 +117,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    alignSelf: "center"
+    alignSelf: "stretch",
+    width: "100%",
+    height: "100%",
   },
   hollowCircle: {
     width: 25,

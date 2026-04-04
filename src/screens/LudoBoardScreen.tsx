@@ -1,4 +1,4 @@
-import { Animated, StyleSheet, View } from 'react-native'
+import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { deviceHeight, deviceWidth } from '../constants/Scaling'
 import Wrapper from '../components/Wrapper'
@@ -14,9 +14,12 @@ import VerticalPath from '../components/VerticalPath'
 import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData'
 import HorizantalPath from '../components/HorizantalPath'
 import FourTriangles from '../components/FourTriangles'
+import MenuModal from '../components/MenuModal'
+import { Menu } from 'lucide-react-native'
 
 export default function LudoBoardScreen() {
   const [showStartImage, setStartImage] = useState(false)
+  const [menuVisible, setMenuVisible] = useState(false)
   const opacity = useRef(new Animated.Value(1)).current
   const isFocused = useNavigation()
 
@@ -50,6 +53,10 @@ export default function LudoBoardScreen() {
 
   return (
     <Wrapper>
+      <TouchableOpacity style={styles.menuIcon} onPress={() => setMenuVisible(true)}>
+        <Menu color='#d5be3e' size={28} />
+      </TouchableOpacity>
+
       <View style={styles.container}>
 
         <View style={styles.flexRow} pointerEvents={isDiceTouch ? "none" : "auto"}>
@@ -107,11 +114,19 @@ export default function LudoBoardScreen() {
         />
       )}
       <>{winner !== null && <WinModal winner={winner} />}</>
+      <MenuModal visible={menuVisible} onClose={() => setMenuVisible(false)} />
     </Wrapper>
   )
 }
 
 const styles = StyleSheet.create({
+  menuIcon: {
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    zIndex: 100,
+    padding: 6,
+  },
   container: {
     alignSelf: "center",
     justifyContent: "center",
