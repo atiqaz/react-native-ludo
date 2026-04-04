@@ -10,6 +10,7 @@ import DiceRoll from "../assets/animation/diceroll.json"
 import { playSound } from '../helpers/SoundUtility'
 import { enableCellSelection, enablePileSelection, updateDiceNo, updatePlayerChance } from '../redux/reducers/gameSlice'
 import { selectGameMode } from '../redux/reducers/gameSelectors'
+import { hanleForwardThunk } from '../redux/reducers/gameAction'
 
 
 
@@ -57,8 +58,8 @@ function Dice(props: any) {
 
 
     const handleDicePress = async () => {
-        // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-        const newDiceNo = 6
+        const newDiceNo = M ath.floor(Math.random() * 6) + 1;
+        // const newDiceNo = 6
         playSound("dice_roll")
         setDiceRolling(true)
         await delay(800)
@@ -70,14 +71,22 @@ function Dice(props: any) {
         const isAnyPieceLocked = data.some((i: any) => i.pos == 0);
 
         if (isAnyPieceAlive) {
-            const canMove = data.some(
+            const moveablePieces = data.filter(
                 (pile: any) => pile.travelCount + newDiceNo <= 57 && pile.pos != 0
             );
+            const canMove = moveablePieces.length > 0;
+
             if (newDiceNo == 6 && isAnyPieceLocked) {
                 dispatch(enablePileSelection({ playerNo: player }));
             }
             if (canMove) {
-                dispatch(enableCellSelection({ playerNo: player }));
+                if (moveablePieces.length === 1 && !(newDiceNo == 6 && isAnyPieceLocked)) {
+                    // auto move
+                    const piece = moveablePieces[0];
+                    dispatch(hanleForwardThunk(player, piece.id, piece.pos));
+                } else {
+                    dispatch(enableCellSelection({ playerNo: player }));
+                }
             } else if (!isAnyPieceLocked || newDiceNo !== 6) {
                 await delay(600);
                 dispatch(updatePlayerChance({ chancePlayer: getNextPlayer(player) }));
