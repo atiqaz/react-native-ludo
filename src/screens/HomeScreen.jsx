@@ -79,8 +79,8 @@ const HomeScreen = () => {
             </View>
             {currentPosition.length !== 0 && renderButton("RESUME", handlePressResume)}
             {renderButton("New game", handleNewGamePress)}
-            {renderButton("VS CPU", () => Alert.alert("Coming Soon"))}
             {renderButton("2 VS 2", handle2PlayerPress)}
+            {renderButton("VS CPU", () => Alert.alert("Coming Soon"))}
 
             <View style={styles.footer}>
                 <Text style={styles.footerSub}>Developed by</Text>
