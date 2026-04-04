@@ -53,8 +53,8 @@ function Dice(props: any) {
 
 
     const handleDicePress = async () => {
-        // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-        const newDiceNo = 6
+        const newDiceNo = Math.floor(Math.random() * 6) + 1;
+        // const newDiceNo = 5
         playSound("dice_roll")
         setDiceRolling(true)
         await delay(800)

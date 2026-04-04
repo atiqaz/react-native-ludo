@@ -125,6 +125,11 @@ const HomeScreen = () => {
             {renderButton("VS CPU", () => Alert.alert("Coming Soon"))}
             {renderButton("2 VS 2", () => Alert.alert("Coming Soon"))}
 
+            <View style={styles.footer}>
+                <Text style={styles.footerSub}>Developed by</Text>
+                <Text style={styles.footerName}>MD ATIQUR RAHMAN</Text>
+            </View>
+
             <Animated.View
                 style={[
                     styles.witchConatiner,
@@ -173,8 +178,29 @@ const styles = StyleSheet.create({
         transform: [{
             rotate: "25deg"
         }]
-
-    }
+    },
+    footer: {
+        alignItems: 'center',
+        marginTop: 18,
+        paddingVertical: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#d5be3e44',
+        width: '60%',
+        alignSelf: 'center',
+    },
+    footerSub: {
+        color: '#888',
+        fontSize: 11,
+        letterSpacing: 1,
+        textTransform: 'uppercase',
+    },
+    footerName: {
+        color: '#d5be3e',
+        fontSize: 13,
+        fontWeight: '700',
+        letterSpacing: 1.5,
+        marginTop: 2,
+    },
 })
 
 export default HomeScreen

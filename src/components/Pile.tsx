@@ -41,7 +41,13 @@ export default function Pile(props: any) {
     }
   }, [color])
 
+  const isActive = cell ? (isCellEnabled && isForwardable()) : isPileEnabled
+
   useEffect(() => {
+    if (!isActive) {
+      rotation.setValue(0)
+      return
+    }
     const rotateAnimation = Animated.loop(
       Animated.timing(rotation, {
         toValue: 1,
@@ -49,10 +55,9 @@ export default function Pile(props: any) {
         useNativeDriver: true
       }),
     )
-
     rotateAnimation.start()
     return () => rotateAnimation.stop()
-  }, [rotation])
+  }, [isActive])
 
 
   const rotateInterPolate = useMemo(() => {
@@ -70,12 +75,10 @@ export default function Pile(props: any) {
 
       ]}
       activeOpacity={0.5}
-   disabled={cell ? !(isCellEnabled && isForwardable()) : !isPileEnabled}
-
-
+      disabled={!isActive}
     >
       <View style={styles.hollowCircle}>
-        {(cell ? (isCellEnabled && isForwardable()) : isPileEnabled) && (
+        {isActive && (
           <View style={styles.dashedContainerCircle}>
             <Animated.View
               style={[
